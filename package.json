@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "start:docker:prod": "docker compose build && docker compose up -d"
   },
   "dependencies": {
     "react": "19.1.0",
