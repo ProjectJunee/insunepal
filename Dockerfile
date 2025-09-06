@@ -19,9 +19,9 @@ COPY . .
 # nice -n 19 equivalent isn't needed in Docker as it's container isolated
 RUN npm run build
 
-EXPOSE 4000
-ENV PORT=4000
+EXPOSE 4400
+ENV PORT=4400
 ENV NODE_ENV=production
 
-CMD [ "npm", "run","start", "--", "-p", "4000" ]
+CMD [ "npm", "run","start", "--", "-p", "4400" ]
 
