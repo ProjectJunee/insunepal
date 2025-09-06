@@ -1,0 +1,18 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4400:4400"
+    env_file:
+      - .env.local
+      - .env
+    restart: always
+    depends_on: []
+    networks:
+      - usnepal-network
+
+networks:
+  usnepal-network:
+    external: true

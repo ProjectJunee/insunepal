@@ -1,0 +1,46 @@
+name: Dev Deploy on Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Notify Slack on Deployment Started
+        run: |
+          COMMIT_MESSAGE=$(jq -r '.head_commit.message' $GITHUB_EVENT_PATH | tr '\n' ' ')
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"🚧 *InsuNepal Deployment Started*\n📦 Project: *Next.js (Develop)*\n🔄 Commit: \`${GITHUB_SHA}\`\n📝 Message: <https://github.com/${{ github.repository }}/commit/${GITHUB_SHA}|${COMMIT_MESSAGE}>\"}" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 138.199.228.170
+          username: root
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            bash /var/www/insunepal/deploy/dev-deploy.sh
+
+      - name: Notify Slack on Success
+        if: success()
+        run: |
+          COMMIT_MESSAGE=$(jq -r '.head_commit.message' $GITHUB_EVENT_PATH | tr '\n' ' ')
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"✅ *InsuNepal Deployment Successful*\n🎉 The Next.js app on *develop* has been successfully deployed!\n🔗 <https://github.com/${{ github.repository }}/commit/${GITHUB_SHA}|${COMMIT_MESSAGE}>\"}" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Slack on Failure
+        if: failure()
+        run: |
+          COMMIT_MESSAGE=$(jq -r '.head_commit.message' $GITHUB_EVENT_PATH | tr '\n' ' ')
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"❌ *InsuNepal Deployment Failed*\n🚨 Please check the logs for more details.\n🔗 Commit: <https://github.com/${{ github.repository }}/commit/${GITHUB_SHA}|${COMMIT_MESSAGE}>\"}" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
