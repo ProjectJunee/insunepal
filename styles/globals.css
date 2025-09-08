@@ -1,8 +1,48 @@
 @import "tailwindcss";
 
 :root {
+  /* Original variables */
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Nexus Landing Page Color Palette */
+  
+  /* Primary Brand Colors */
+  --brand-cyan-400: #22d3ee;
+  --brand-cyan-500: #06b6d4;
+  --brand-purple-400: #c084fc;
+  --brand-purple-500: #a855f7;
+  --brand-purple-900: #581c87;
+  --brand-pink-400: #f472b6;
+  
+  /* Background Colors */
+  --bg-slate-900: #0f172a;
+  --bg-purple-900: #581c87;
+  
+  /* Text Colors */
+  --text-white: #ffffff;
+  --text-gray-300: #d1d5db;
+  --text-gray-400: #9ca3af;
+  --text-yellow-400: #facc15;
+  --text-green-400: #4ade80;
+  
+  /* Glass/Backdrop Effects */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-bg-hover: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-hover: rgba(6, 182, 212, 0.5); /* cyan-500 with opacity */
+  
+  /* Gradient Definitions */
+  --gradient-brand: linear-gradient(to right, var(--brand-cyan-500), var(--brand-purple-500));
+  --gradient-brand-text: linear-gradient(to right, var(--brand-cyan-400), var(--brand-purple-400));
+  --gradient-rainbow: linear-gradient(to right, var(--brand-cyan-400), var(--brand-purple-400), var(--brand-pink-400));
+  --gradient-bg-main: linear-gradient(to bottom right, var(--bg-slate-900), var(--bg-purple-900), var(--bg-slate-900));
+  --gradient-bg-overlay: linear-gradient(to right, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.2)); /* cyan-500/20, purple-500/20 */
+  
+  /* Shadow Colors */
+  --shadow-purple: rgba(168, 85, 247, 0.25); /* purple-500/25 */
+  --shadow-cyan: rgba(6, 182, 212, 0.1); /* cyan-500/10 */
+  --shadow-purple-strong: rgba(168, 85, 247, 0.25); /* purple-500/25 */
 }
 
 @theme inline {
@@ -17,6 +57,77 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/* Utility Classes for Easy Reuse */
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+
+.bg-brand-text-gradient {
+  background: var(--gradient-brand-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-rainbow-gradient {
+  background: var(--gradient-rainbow);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-main-gradient {
+  background: var(--gradient-bg-main);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+.shadow-brand-purple {
+  box-shadow: 0 25px 50px -12px var(--shadow-purple);
+}
+
+.shadow-brand-cyan {
+  box-shadow: 0 25px 50px -12px var(--shadow-cyan);
+}
+
+/* Button Styles */
+.btn-brand {
+  background: var(--gradient-brand);
+  color: var(--text-white);
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-brand:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px -12px var(--shadow-purple-strong);
+}
+
+.btn-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-white);
+  padding: 1rem 1.5rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.btn-glass:hover {
+  background: var(--glass-bg-hover);
 }
 
 body {
