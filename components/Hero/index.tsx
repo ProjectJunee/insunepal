@@ -49,19 +49,10 @@ const LifeInsuranceQuote = () => {
     }, 2000);
   };
 
-  const calculateAge = (birthDate: string) => {
-    if (!birthDate) return 0;
+  const calculateAge = (birthYear: string) => {
+    if (!birthYear) return 0;
     const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-    return age;
+    return today.getFullYear() - parseInt(birthYear, 10);
   };
 
   const getEstimatedPremium = () => {
@@ -213,15 +204,18 @@ const LifeInsuranceQuote = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date of Birth *
+                      Year of Birth *
                     </label>
                     <input
-                      type="date"
+                      type="number"
                       name="dateOfBirth"
                       required
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
+                      min="1900"
+                      max={new Date().getFullYear()}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
+                      placeholder="e.g. 1995"
                     />
                   </div>
                 </div>
