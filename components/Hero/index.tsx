@@ -153,7 +153,7 @@ const LifeInsuranceQuote = () => {
     setDialog((prev) => ({ ...prev, isOpen: false }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const requiredFields = [
       "firstName",
       "lastName",
@@ -178,14 +178,44 @@ const LifeInsuranceQuote = () => {
     console.log("Submitted");
     console.log(formData);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        setIsSubmitted(false);
+        showDialog(
+          "Error Submitting Quote Request",
+          result.message ||
+            "An error occurred while submitting your quote request. Please try again later.",
+          "error"
+        );
+        return;
+      }
+
+      console.log(result);
+
+      setTimeout(() => {
+        setIsSubmitted(false);
+        showDialog(
+          "Quote Request Submitted!",
+          "Thank you for your interest! You'll receive your personalized life insurance quote via email within 24 hours.",
+          "success"
+        );
+      }, 2000);
+    } catch (error) {
+      console.error(error);
       setIsSubmitted(false);
       showDialog(
-        "Quote Request Submitted!",
-        "Thank you for your interest! You'll receive your personalized life insurance quote via email within 24 hours.",
-        "success"
+        "Error Submitting Quote Request",
+        "An error occurred while submitting your quote request. Please try again later.",
+        "error"
       );
-    }, 2000);
+    }
   };
 
   return (
