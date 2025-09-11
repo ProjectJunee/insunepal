@@ -15,6 +15,9 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the application
 COPY . .
 
+# Prisma generate
+RUN npx prisma generate
+
 # Build the application with optimized settings
 # nice -n 19 equivalent isn't needed in Docker as it's container isolated
 RUN npm run build
