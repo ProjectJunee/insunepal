@@ -153,6 +153,7 @@ const LifeInsuranceQuote = () => {
     email: "",
     phone: "",
     firstName: "",
+    midName: "",
     lastName: "",
   });
 
@@ -206,7 +207,7 @@ const LifeInsuranceQuote = () => {
       "phone",
       "dateOfBirth",
       "gender",
-      "email",
+      // "email",
     ];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
@@ -413,6 +414,17 @@ const LifeInsuranceQuote = () => {
                   />
 
                   <TextField
+                    label="Middle Name"
+                    name="midName"
+                    required
+                    value={formData.midName}
+                    onChange={handleInputChange}
+                    placeholder="Ram"
+                    error={errors.firstName}
+                    icon={User}
+                  />
+
+                  <TextField
                     label="Last Name"
                     name="lastName"
                     required
@@ -480,7 +492,6 @@ const LifeInsuranceQuote = () => {
                   label="Email Address"
                   name="email"
                   type="email"
-                  required
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="john@example.com"

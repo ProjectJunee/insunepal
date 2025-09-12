@@ -180,6 +180,17 @@ export default async function handler(
         break;
       }
 
+      case "midName": {
+        const validation = validateName(stringValue, "Middle name");
+        if (!validation.isValid) {
+          return res.status(400).json({
+            success: false,
+            message: validation.message,
+          });
+        }
+        break;
+      }
+
       case "lastName": {
         const validation = validateName(stringValue, "Last name");
         if (!validation.isValid) {
@@ -204,16 +215,6 @@ export default async function handler(
             .status(400)
             .json({ success: false, message: "Email address is too long." });
         }
-
-        const existingEmail = await prisma.lifeInsuranceQuote.findUnique({
-          where: { email: stringValue.toLowerCase() },
-        });
-        if (existingEmail) {
-          return res.status(409).json({
-            success: false,
-            message: "This email is already registered.",
-          });
-        }
         break;
       }
 
@@ -226,15 +227,15 @@ export default async function handler(
           });
         }
 
-        const existingPhone = await prisma.lifeInsuranceQuote.findFirst({
-          where: { phone: validation.cleanedValue },
-        });
-        if (existingPhone) {
-          return res.status(409).json({
-            success: false,
-            message: "This phone number is already registered.",
-          });
-        }
+        // const existingPhone = await prisma.lifeInsuranceQuote.findFirst({
+        //   where: { phone: validation.cleanedValue },
+        // });
+        // if (existingPhone) {
+        //   return res.status(409).json({
+        //     success: false,
+        //     message: "This phone number is already registered.",
+        //   });
+        // }
         break;
       }
 

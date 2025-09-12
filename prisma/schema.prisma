@@ -1,7 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x", "darwin-arm64", "rhel-openssl-3.0.x"]
-  // output        = "../generated/prisma"
 }
 
 datasource db {
@@ -12,12 +11,13 @@ datasource db {
 model LifeInsuranceQuote {
   id             Int    @id @default(autoincrement())
   firstName      String
+  midName        String
   lastName       String
   district       String
   phone          String
   dateOfBirth    Int
   gender         Gender
-  email          String @unique
+  email          String
   coverageAmount Int    @default(500000)
 
   createdAt DateTime @default(now())

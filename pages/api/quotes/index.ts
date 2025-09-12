@@ -15,6 +15,7 @@ export default async function handler(
   try {
     const {
       firstName,
+      midName,
       lastName,
       district,
       phone,
@@ -43,6 +44,7 @@ export default async function handler(
     const quote = await prisma.lifeInsuranceQuote.create({
       data: {
         firstName,
+        midName,
         lastName,
         district,
         phone,
