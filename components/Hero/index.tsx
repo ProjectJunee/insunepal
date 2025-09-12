@@ -1,9 +1,19 @@
-import React, { useState } from "react";
-import { User, Shield, Heart, Star, TrendingUp } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  User,
+  Shield,
+  Heart,
+  Star,
+  TrendingUp,
+  Phone,
+  Calendar,
+  Users,
+} from "lucide-react";
 import PhoneInput from "./PhoneInput";
 import Dialog from "@/components/Common/Dialog";
 import Features from "@/components/Hero/Features";
 import { NP_DISTRICTS } from "@/constants/districts";
+import useDebounce from "@/hooks/useDebounce";
 
 const TextField = ({
   label,
@@ -13,23 +23,42 @@ const TextField = ({
   onChange,
   placeholder,
   required = false,
+  error,
+  icon: Icon,
   ...props
 }: any) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-1.5">
       {label}
-      {required && " *"}
+      {required && <span className="text-red-500 ml-1">*</span>}
     </label>
-    <input
-      type={type}
-      name={name}
-      required={required}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
-      {...props}
-    />
+    <div className="relative">
+      {Icon && (
+        <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+      )}
+      <input
+        type={type}
+        name={name}
+        required={required}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`w-full ${
+          Icon ? "pl-10" : "pl-3"
+        } pr-3 py-2.5 border rounded-lg focus:ring-2 transition-all duration-200 ${
+          error
+            ? "border-red-500 focus:ring-red-200 bg-red-50"
+            : "border-gray-300 focus:ring-teal-200 focus:border-teal-500 hover:border-gray-400"
+        }`}
+        {...props}
+      />
+      {error && (
+        <p className="text-red-500 text-xs mt-1 flex items-center">
+          <span className="w-1 h-1 bg-red-500 rounded-full mr-1.5"></span>
+          {error}
+        </p>
+      )}
+    </div>
   </div>
 );
 
@@ -40,36 +69,45 @@ const SelectField = ({
   onChange,
   options,
   required = false,
+  icon: Icon,
 }: any) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-1.5">
       {label}
-      {required && " *"}
+      {required && <span className="text-red-500 ml-1">*</span>}
     </label>
-    <select
-      name={name}
-      required={required}
-      value={value}
-      onChange={onChange}
-      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors">
-      <option value="">Select {label.toLowerCase()}</option>
-      {options.map((opt: any, i: any) => (
-        <option key={i} value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
+    <div className="relative">
+      {Icon && (
+        <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
+      )}
+      <select
+        name={name}
+        required={required}
+        value={value}
+        onChange={onChange}
+        className={`w-full ${
+          Icon ? "pl-10" : "pl-3"
+        } pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-200 focus:border-teal-500 hover:border-gray-400 transition-all duration-200 bg-white`}>
+        <option value="">Select {label.toLowerCase()}</option>
+        {options.map((opt: any, i: any) => (
+          <option key={i} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
   </div>
 );
 
 const RadioGroup = ({ label, name, options, value, onChange }: any) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
-      {label} *
+      <Users className="inline w-4 h-4 mr-1.5 text-gray-400" />
+      {label} <span className="text-red-500">*</span>
     </label>
-    <div className="grid grid-cols-3 gap-3">
+    <div className="flex space-x-2">
       {options.map((opt: any) => (
-        <label key={opt.value} className="relative">
+        <label key={opt.value} className="flex-1">
           <input
             type="radio"
             name={name}
@@ -79,10 +117,10 @@ const RadioGroup = ({ label, name, options, value, onChange }: any) => (
             className="sr-only"
           />
           <div
-            className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-all text-sm ${
+            className={`px-3 py-2 rounded-lg border-2 cursor-pointer text-center transition-all duration-200 text-sm font-medium ${
               value === opt.value
-                ? "border-teal-500 bg-teal-50 text-teal-700"
-                : "border-gray-300 hover:border-gray-400"
+                ? "border-teal-500 bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md transform scale-105"
+                : "border-gray-300 hover:border-teal-300 hover:bg-teal-50 text-gray-700"
             }`}>
             {opt.label}
           </div>
@@ -105,6 +143,8 @@ interface FormData {
 }
 
 const LifeInsuranceQuote = () => {
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const [formData, setFormData] = useState<FormData>({
     district: "",
     dateOfBirth: "",
@@ -115,6 +155,11 @@ const LifeInsuranceQuote = () => {
     firstName: "",
     lastName: "",
   });
+
+  const debouncedEmail = useDebounce(formData.email, 500);
+  const debouncedPhone = useDebounce(formData.phone, 500);
+  const debouncedFirstName = useDebounce(formData.firstName, 500);
+  const debouncedLastName = useDebounce(formData.lastName, 500);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [dialog, setDialog] = useState<{
@@ -218,6 +263,56 @@ const LifeInsuranceQuote = () => {
     }
   };
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    const validateField = async (name: string, value: string) => {
+      if (!value || isCancelled) return;
+
+      try {
+        const res = await fetch(`/api/validate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ field: name, value }),
+        });
+
+        // Check if this effect is still valid
+        if (isCancelled) return;
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          setErrors((prev) => ({
+            ...prev,
+            [name]: result.message || "Invalid value",
+          }));
+        } else {
+          setErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors[name];
+            return newErrors;
+          });
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Validation error:", err);
+        }
+      }
+    };
+
+    const promises = [];
+    if (debouncedEmail) promises.push(validateField("email", debouncedEmail));
+    if (debouncedPhone) promises.push(validateField("phone", debouncedPhone));
+    if (debouncedFirstName)
+      promises.push(validateField("firstName", debouncedFirstName));
+    if (debouncedLastName)
+      promises.push(validateField("lastName", debouncedLastName));
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [debouncedEmail, debouncedPhone, debouncedFirstName, debouncedLastName]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-green-50">
       {/* Compact Hero Section */}
@@ -289,9 +384,12 @@ const LifeInsuranceQuote = () => {
               </div>
             </div>
 
-            {/* Right - Compact Form */}
-            <div className="bg-white rounded-xl shadow-2xl p-6">
-              <div className="text-center mb-5">
+            {/* Right - Compact Form with Enhanced Design */}
+            <div className="bg-white rounded-xl shadow-2xl border border-gray-100 p-6 backdrop-blur-sm">
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
                 <h2 className="text-xl font-bold text-gray-900 mb-1">
                   Get Your Free Quote
                 </h2>
@@ -309,48 +407,62 @@ const LifeInsuranceQuote = () => {
                     required
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="John"
+                    placeholder="Ram"
+                    error={errors.firstName}
+                    icon={User}
                   />
+
                   <TextField
                     label="Last Name"
                     name="lastName"
                     required
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    placeholder="Smith"
+                    placeholder="Hari"
+                    error={errors.lastName}
+                    icon={User}
                   />
                 </div>
 
-                {/* District and Phone */}
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <SelectField
-                    label="District"
-                    name="district"
-                    required
-                    value={formData.district}
-                    onChange={handleInputChange}
-                    options={NP_DISTRICTS}
-                  />
+                {/* District and Age */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <SelectField
+                      label="District"
+                      name="district"
+                      required
+                      value={formData.district}
+                      onChange={handleInputChange}
+                      options={NP_DISTRICTS}
+                    />
+                  </div>
+                  <div>
+                    <TextField
+                      label="Birth Year"
+                      name="dateOfBirth"
+                      type="number"
+                      required
+                      value={formData.dateOfBirth}
+                      onChange={handleInputChange}
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      placeholder="1995"
+                      icon={Calendar}
+                    />
+                  </div>
+                </div>
+
+                {/* Phone - Full Width */}
+
+                {/* <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" /> */}
+                <div>
                   <PhoneInput
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
                 </div>
 
-                {/* Birth Year */}
-                <TextField
-                  label="Year of Birth"
-                  name="dateOfBirth"
-                  type="number"
-                  required
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  placeholder="e.g. 1995"
-                />
-
-                {/* Gender */}
+                {/* Gender - Compact */}
                 <RadioGroup
                   label="Gender"
                   name="gender"
@@ -372,22 +484,37 @@ const LifeInsuranceQuote = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="john@example.com"
+                  error={errors.email}
                 />
 
                 {/* Submit */}
                 <button
                   onClick={handleSubmit}
                   disabled={isSubmitted}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 transform ${
                     isSubmitted
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-teal-600 hover:bg-teal-700 hover:shadow-lg transform hover:scale-105"
-                  } text-white`}>
-                  {isSubmitted ? "Processing..." : "Get My Free Quote"}
+                      : "bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 hover:shadow-xl hover:scale-105 active:scale-95"
+                  } text-white shadow-lg`}>
+                  {isSubmitted ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    "Get My Free Quote"
+                  )}
                 </button>
                 <p className="text-xs text-gray-500 text-center leading-relaxed">
-                  By clicking "Get My Free Quote", you agree to our Terms of
-                  Service and Privacy Policy.
+                  By clicking "Get My Free Quote", you agree to our{" "}
+                  <span className="text-teal-600 hover:underline cursor-pointer">
+                    Terms of Service
+                  </span>{" "}
+                  and{" "}
+                  <span className="text-teal-600 hover:underline cursor-pointer">
+                    Privacy Policy
+                  </span>
+                  .
                 </p>
               </div>
             </div>

@@ -107,7 +107,7 @@ const PhoneInput = ({ formData, handleInputChange }: any) => {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Phone Number *
+        Phone Number <span className="text-red-500 ml-1">*</span>
       </label>
 
       {/* Checkbox for landline - moved above input */}
